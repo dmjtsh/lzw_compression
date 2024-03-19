@@ -7,7 +7,7 @@
 
 int main()
 {   
-    char str1[200] = "aaaaaabacaa";
+    char str1[200] = "aaaaaabaacaa";
 
     char str2[1000] = {};
     strcpy(str2, CompressData(str1));

@@ -13,6 +13,8 @@ struct Dictionary
     size_t largest_word_size;
 };
 
+void DictionaryPrint(Dictionary* dictionary, FILE* file_to_print);
+
 void  DictionaryAdd(Dictionary* dictionary, int key, const char* value, size_t value_len);
 
 char* DictionaryGetValue(Dictionary* dictionary, int key);
