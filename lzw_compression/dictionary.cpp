@@ -18,7 +18,45 @@ void DictionaryReallocUp(Dictionary* dictionary)
 
     dictionary->keys   = dictionary_keys_tmp;
     dictionary->values = dictionary_values_tmp;
+}
 
+char* DictionaryGetValue(Dictionary* dictionary, int key)
+{
+    assert(dictionary != nullptr);
+
+    bool is_elem_in_dict = false;
+
+    for (size_t i = 0; i < dictionary->size; i++)
+        if(dictionary->keys[i] == key)
+            return dictionary->values[i];
+
+    return nullptr;
+
+}
+
+int DictionaryGetKey(Dictionary* dictionary, char* value)
+{
+    assert(dictionary != nullptr);
+
+    for (size_t i = 0; i < dictionary->size; i++)
+        if(strcmp(dictionary->values[i], value) == 0)
+            return dictionary->keys[i];
+
+    return 0;
+
+}
+
+void DictionaryAdd(Dictionary* dictionary, int key, const char* value, size_t value_len)
+{
+    assert(dictionary != nullptr);
+
+    dictionary->keys[dictionary->size]   = key;
+    dictionary->values[dictionary->size] = _strdup(value);
+
+    if(dictionary->size > DICTIONARY_START_CAPACITY)
+        DictionaryReallocUp(dictionary);
+
+    dictionary->largest_word_size = __max(dictionary->largest_word_size, value_len);
 }
 
 void DictionaryCtor(Dictionary* dictionary)
@@ -33,31 +71,6 @@ void DictionaryCtor(Dictionary* dictionary)
 
     assert(dictionary->keys   != nullptr);
     assert(dictionary->values != nullptr);
-}
-
-bool DictionaryCheck(Dictionary* dictionary, int key)
-{
-    assert(dictionary != nullptr);
-
-    bool is_elem_in_dict = false;
-
-    for (size_t i = 0; i < dictionary->size; i++)
-        if(dictionary->keys[i] == key)
-            is_elem_in_dict = true;
-
-    return is_elem_in_dict;
-
-}
-
-void DictionaryAdd(Dictionary* dictionary, int key, const char* value)
-{
-    assert(dictionary != nullptr);
-
-    dictionary->keys[dictionary->size]   = key;
-    dictionary->values[dictionary->size] = strdup(value);
-
-    if(dictionary->size > DICTIONARY_START_CAPACITY)
-        DictionaryReallocUp(dictionary);
 }
 
 void DictionaryDtor(Dictionary* dictionary)
