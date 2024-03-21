@@ -1,10 +1,10 @@
 #pragma once
 
-const size_t DICTIONARY_START_CAPACITY = 100;
+const size_t DICTIONARY_START_CAPACITY = 300;
 
 struct Dictionary
 {
-    int*    keys;
+    short* keys;
     char** values;
 
     size_t size;
@@ -15,10 +15,10 @@ struct Dictionary
 
 void DictionaryPrint(Dictionary* dictionary, FILE* file_to_print);
 
-void  DictionaryAdd(Dictionary* dictionary, int key, const char* value, size_t value_len);
+void DictionaryAdd(Dictionary* dictionary, short key, const char* value, size_t value_len);
 
-char* DictionaryGetValue(Dictionary* dictionary, int key);
-int   DictionaryGetKey(Dictionary* dictionary, char* value);
+char* DictionaryGetValue(Dictionary* dictionary, short key);
+short DictionaryGetKey(Dictionary* dictionary, char* value);
 
 void DictionaryCtor(Dictionary* dictionary);
 void DictionaryDtor(Dictionary* dictionary);

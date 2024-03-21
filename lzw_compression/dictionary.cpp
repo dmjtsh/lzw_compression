@@ -9,7 +9,7 @@ void DictionaryReallocUp(Dictionary* dictionary)
 {
     assert(dictionary != nullptr);
 
-    int* dictionary_keys_tmp     = (int*)  realloc(dictionary->keys, dictionary->capacity * 2 * sizeof(int));
+    short* dictionary_keys_tmp   = (short*)  realloc(dictionary->keys, dictionary->capacity * 2 * sizeof(short));
     char** dictionary_values_tmp = (char**)realloc(dictionary->values, dictionary->capacity * 2 * sizeof(char*));
     
     dictionary->capacity *= 2;
@@ -21,7 +21,7 @@ void DictionaryReallocUp(Dictionary* dictionary)
     dictionary->values = dictionary_values_tmp;
 }
 
-char* DictionaryGetValue(Dictionary* dictionary, int key)
+char* DictionaryGetValue(Dictionary* dictionary, short key)
 {
     assert(dictionary != nullptr);
 
@@ -35,7 +35,7 @@ char* DictionaryGetValue(Dictionary* dictionary, int key)
 
 }
 
-int DictionaryGetKey(Dictionary* dictionary, char* value)
+short DictionaryGetKey(Dictionary* dictionary, char* value)
 {
     assert(dictionary != nullptr);
 
@@ -44,10 +44,9 @@ int DictionaryGetKey(Dictionary* dictionary, char* value)
             return dictionary->keys[i];
 
     return 0;
-
 }
 
-void DictionaryAdd(Dictionary* dictionary, int key, const char* value, size_t value_len)
+void DictionaryAdd(Dictionary* dictionary, short key, const char* value, size_t value_len)
 {
     assert(dictionary != nullptr);
 
@@ -66,7 +65,7 @@ void DictionaryCtor(Dictionary* dictionary)
 {
     assert(dictionary != nullptr);
 
-    dictionary->keys   = (int*)  calloc(DICTIONARY_START_CAPACITY, sizeof(int));
+    dictionary->keys   = (short*)calloc(DICTIONARY_START_CAPACITY, sizeof(short));
     dictionary->values = (char**)calloc(DICTIONARY_START_CAPACITY, sizeof(char*));
 
     dictionary->capacity = DICTIONARY_START_CAPACITY;
@@ -94,10 +93,13 @@ void DictionaryDtor(Dictionary* dictionary)
 {
     assert(dictionary != nullptr);
 
-    free(dictionary->keys); 
+    if(dictionary->keys && dictionary->values && dictionary->size > 0)
+    {
+        free(dictionary->keys); 
 
-    for (size_t i = 0; i < dictionary->size; i++)
-        free(dictionary->values[i]);
+        for (size_t i = 0; i < dictionary->size; i++)
+            free(dictionary->values[i]);
 
-    free(dictionary->values);
+        free(dictionary->values);
+    }
 }

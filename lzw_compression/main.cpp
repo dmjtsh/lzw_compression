@@ -3,16 +3,17 @@
 #include <stdio.h>
 #include <string.h>
 
+#include "DimasLIB/DimasUtilities/utilities.h"
 #include "lzw.h"
 
-int main()
+int main(int argc, const char** argv)
 {   
-    char str1[200] = "aaaaaabaacaa";
+    FILE* compressed_file = fopen("compressed.txt" , "w");
 
-    char str2[1000] = {};
-    strcpy(str2, CompressData(str1));
+    size_t compressed_data_size = 0;
+    short* compressed_data = CompressData((argc > 1) ? argv[0] : "source.txt", &compressed_data_size);
 
-    printf("%s", str2);
+    fwrite(compressed_data, sizeof(short), compressed_data_size, compressed_file);
 
     return 0;
 }
