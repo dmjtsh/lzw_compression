@@ -9,8 +9,6 @@ struct Dictionary
 
     size_t size;
     size_t capacity;
-
-    size_t largest_word_size;
 };
 
 void DictionaryPrint(Dictionary* dictionary, FILE* file_to_print);

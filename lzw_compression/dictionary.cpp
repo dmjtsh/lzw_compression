@@ -57,8 +57,6 @@ void DictionaryAdd(Dictionary* dictionary, short key, const char* value, size_t 
 
     if(dictionary->size >= dictionary->capacity)
         DictionaryReallocUp(dictionary);
-
-    dictionary->largest_word_size = __max(dictionary->largest_word_size, value_len);
 }
 
 void DictionaryCtor(Dictionary* dictionary)

@@ -35,7 +35,6 @@ short* CompressData(const char* file_name, size_t* compressed_data_size)
     DictionaryCtor(&dictionary);
 
     InitializeDictionary(&dictionary);
-    // DEBUG
     DictionaryPrint(&dictionary, stdout);
 
     const char* data          = GetFileText(file_name);
@@ -47,8 +46,9 @@ short* CompressData(const char* file_name, size_t* compressed_data_size)
     short* compressed_data = (short*)calloc(data_size, sizeof(short)); 
     assert(compressed_data != nullptr);
 
-    char  curr_str[MAX_CODE_WORD_SIZE] = {};
+    char  buffer_str[MAX_CODE_WORD_SIZE] = {};
     short key = 0;
+    
     while (data_char_num < data_size)
     {
         if (dictionary.size >= MAX_DICTIONARY_SIZE)
@@ -57,41 +57,32 @@ short* CompressData(const char* file_name, size_t* compressed_data_size)
             InitializeDictionary(&dictionary);
         }
 
-        curr_str[str_size] = data[data_char_num]; 
-        str_size++;
-        data_char_num++;
+        buffer_str[str_size] = data[data_char_num]; 
+        buffer_str[str_size+1] = '\0';
 
-        if(str_size == dictionary.largest_word_size || data_char_num >= data_size)
+        while(data_char_num < data_size && (key = DictionaryGetKey(&dictionary, buffer_str)))
         {
-            // CHECK THE BIGGEST WORD IN DICT
-            while (!(key = DictionaryGetKey(&dictionary, curr_str)))
-            {
-                if(str_size == 0)
-                    printf("");
-
-                str_size--;
-                data_char_num--;
-                curr_str[str_size] = '\0';
-            }
-            
-            // ADDING NEW CODE
-
             compressed_data[comp_data_char_num] = key;
-            comp_data_char_num += 1;
-            
-            // ADDING NEW WORD TO DICTIONARY
-            curr_str[str_size]   = data[data_char_num];
-            curr_str[str_size+1] = '\0';
 
-            DictionaryAdd(&dictionary, dictionary.size+1, curr_str, str_size+1);
-            
-            // DEBUG
-            //DictionaryPrint(&dictionary, stdout);
+            str_size++;
+            data_char_num++;
 
-            str_size = 0;
-            curr_str[str_size] = '\0';
+            if(data_char_num == 1023)
+            printf("");
+
+            buffer_str[str_size] = data[data_char_num];
+            buffer_str[str_size+1] = '\0';
         }
 
+        comp_data_char_num++;
+        
+        // ADDING NEW WORD TO DICTIONARY
+
+        DictionaryAdd(&dictionary, dictionary.size+1, buffer_str, str_size+1);
+
+        // RESETING THE BUFFER
+        str_size = 0;
+        buffer_str[str_size] = '\0';
     }
 
     DictionaryDtor(&dictionary);
