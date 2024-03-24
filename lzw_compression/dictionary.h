@@ -2,10 +2,19 @@
 
 const size_t DICTIONARY_START_CAPACITY = 300;
 
+struct ByteStrings
+{
+    char*  byte_string;
+    size_t length;
+};
+
+typedef short KeyType;
+typedef ByteStrings ValueType;
+
 struct Dictionary
 {
-    short* keys;
-    char** values;
+    KeyType*   keys;
+    ValueType* values;
 
     size_t size;
     size_t capacity;
@@ -13,10 +22,10 @@ struct Dictionary
 
 void DictionaryPrint(Dictionary* dictionary, FILE* file_to_print);
 
-void DictionaryAdd(Dictionary* dictionary, short key, const char* value, size_t value_len);
+ValueType* DictionaryAdd(Dictionary* dictionary, KeyType key, ValueType* value);
 
-char* DictionaryGetValue(Dictionary* dictionary, short key);
-short DictionaryGetKey(Dictionary* dictionary, char* value);
+ValueType* DictionaryGetValue(Dictionary* dictionary, KeyType key);
+bool       DictionarySetKey(Dictionary* dictionary, ValueType* value, KeyType* key);
 
 void DictionaryCtor(Dictionary* dictionary);
 void DictionaryDtor(Dictionary* dictionary);

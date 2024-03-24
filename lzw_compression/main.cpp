@@ -3,17 +3,22 @@
 #include <stdio.h>
 #include <string.h>
 
-#include "DimasLIB/DimasUtilities/utilities.h"
 #include "lzw.h"
 
 int main(int argc, const char** argv)
 {   
-    FILE* compressed_file = fopen("compressed.txt" , "w");
+    FILE* compressed_file   = fopen("compressed.txt" , "wb");
+    FILE* decompressed_file = fopen("decompressed.pdf", "wb");
 
-    size_t compressed_data_size = 0;
-    short* compressed_data = CompressData((argc > 1) ? argv[0] : "source3.txt", &compressed_data_size);
+    size_t   compressed_data_size = 0;
+    KeyType* compressed_data = CompressData((argc > 1) ? argv[0] : "ded.pdf", &compressed_data_size);
+    fwrite(compressed_data, sizeof(KeyType), compressed_data_size, compressed_file);
+    fclose(compressed_file);
 
-    fwrite(compressed_data, sizeof(short), compressed_data_size, compressed_file);
+    size_t decompressed_data_size = 0;
+    char*  decompressed_data = DecompressData("compressed.txt", &decompressed_data_size);
+    fwrite(decompressed_data, sizeof(char), decompressed_data_size, decompressed_file);
+    fclose(decompressed_file);
 
     return 0;
 }

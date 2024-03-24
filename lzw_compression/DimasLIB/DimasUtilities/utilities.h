@@ -3,8 +3,8 @@
 
 #include <stdio.h>
 
-int   GetFileSize(const char* file_name);
 char* GetFileText(const char* file_name);
+char* GetFileText(const char* file_name, size_t* n_chars);
 
 int CountTextStrings(const char* text);
 

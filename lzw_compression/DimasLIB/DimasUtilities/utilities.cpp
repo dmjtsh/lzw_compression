@@ -5,6 +5,7 @@
 #include <cstring>
 #include <time.h>
 #include <ctype.h>
+#include <sys\stat.h>
 
 #include "utilities.h"
 
@@ -22,20 +23,12 @@ void UnsetErrorBit(unsigned* error, int error_bit)
 
 int GetFileSize(const char* file_name)
 {
-    if (!file_name)
-        return -1;
+    struct stat st = {};
 
-    FILE* file = NULL;
-    file = fopen(file_name, "r");
-    if (!file)
-        return -1;
+    int ret = stat(file_name, &st);
+    assert(ret == 0);
 
-    fseek(file, 0, SEEK_END);
-    long file_size = ftell(file);
-    fseek(file, 0, SEEK_SET);
-
-    fclose(file);
-    return file_size;
+    return st.st_size;
 }
 
 char* GetFileText(const char* file_name)
@@ -43,10 +36,9 @@ char* GetFileText(const char* file_name)
     if(!file_name)
         return NULL;
     int file_size = GetFileSize(file_name);
-    assert(file_size != -1);
 
     FILE* file = NULL;
-    file = fopen(file_name, "r");
+    file = fopen(file_name, "rb"); // open
     if (!file)
         return NULL;
 
@@ -54,11 +46,34 @@ char* GetFileText(const char* file_name)
     if (!text)
         return NULL;
     
-    size_t n_chars = fread(text, sizeof(char), file_size, file);
+    size_t n_chars = fread(text, sizeof(char), file_size, file); // read
 
 	text[n_chars] = '\0';
 
-    fclose(file);
+    fclose(file); // close
+    return text;
+}
+
+char* GetFileText(const char* file_name, size_t* n_chars)
+{
+    if(!file_name || !n_chars)
+        return NULL;
+    int file_size = GetFileSize(file_name);
+
+    FILE* file = NULL;
+    file = fopen(file_name, "rb"); // open
+    if (!file)
+        return NULL;
+
+    char* text = (char*)calloc(file_size + 1, sizeof(char));
+    if (!text)
+        return NULL;
+    
+    *n_chars = fread(text, sizeof(char), file_size, file); // read
+
+	text[*n_chars] = '\0';
+
+    fclose(file); // close
     return text;
 }
 

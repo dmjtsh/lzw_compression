@@ -9,8 +9,8 @@ void DictionaryReallocUp(Dictionary* dictionary)
 {
     assert(dictionary != nullptr);
 
-    short* dictionary_keys_tmp   = (short*)  realloc(dictionary->keys, dictionary->capacity * 2 * sizeof(short));
-    char** dictionary_values_tmp = (char**)realloc(dictionary->values, dictionary->capacity * 2 * sizeof(char*));
+    KeyType*   dictionary_keys_tmp   = (KeyType*)  realloc(dictionary->keys, dictionary->capacity * 2 * sizeof(KeyType));
+    ValueType* dictionary_values_tmp = (ValueType*)realloc(dictionary->values, dictionary->capacity * 2 * sizeof(ValueType));
     
     dictionary->capacity *= 2;
 
@@ -21,50 +21,60 @@ void DictionaryReallocUp(Dictionary* dictionary)
     dictionary->values = dictionary_values_tmp;
 }
 
-char* DictionaryGetValue(Dictionary* dictionary, short key)
+ValueType* DictionaryGetValue(Dictionary* dictionary, KeyType key)
 {
     assert(dictionary != nullptr);
-
-    bool is_elem_in_dict = false;
 
     for (size_t i = 0; i < dictionary->size; i++)
         if(dictionary->keys[i] == key)
-            return dictionary->values[i];
+            return &dictionary->values[i];
 
     return nullptr;
-
 }
 
-short DictionaryGetKey(Dictionary* dictionary, char* value)
+bool DictionarySetKey(Dictionary* dictionary, ValueType* value, KeyType* key)
 {
     assert(dictionary != nullptr);
 
     for (size_t i = 0; i < dictionary->size; i++)
-        if(strcmp(dictionary->values[i], value) == 0)
-            return dictionary->keys[i];
+    {
+        if(value->length != dictionary->values[i].length)
+            continue;
 
-    return 0;
+        if(memcmp(dictionary->values[i].byte_string, value->byte_string, value->length) == 0)
+        {
+            *key = dictionary->keys[i];
+            return true;
+        }
+    }
+    return false;
 }
 
-void DictionaryAdd(Dictionary* dictionary, short key, const char* value, size_t value_len)
+ValueType* DictionaryAdd(Dictionary* dictionary, KeyType key, ValueType* value)
 {
     assert(dictionary != nullptr);
 
-    dictionary->keys[dictionary->size]   = key;
-    dictionary->values[dictionary->size] = _strdup(value);
+    dictionary->keys[dictionary->size]               = key;
+    dictionary->values[dictionary->size].byte_string = (char*)calloc(value->length, sizeof(char));
+    assert(dictionary->values[dictionary->size].byte_string != nullptr);
+    memcpy(dictionary->values[dictionary->size].byte_string, value->byte_string, value->length);
+
+    dictionary->values[dictionary->size].length = value->length;
 
     dictionary->size++;
 
     if(dictionary->size >= dictionary->capacity)
         DictionaryReallocUp(dictionary);
+
+    return &dictionary->values[dictionary->size];
 }
 
 void DictionaryCtor(Dictionary* dictionary)
 {
     assert(dictionary != nullptr);
 
-    dictionary->keys   = (short*)calloc(DICTIONARY_START_CAPACITY, sizeof(short));
-    dictionary->values = (char**)calloc(DICTIONARY_START_CAPACITY, sizeof(char*));
+    dictionary->keys   = (KeyType*)  calloc(DICTIONARY_START_CAPACITY, sizeof(KeyType));
+    dictionary->values = (ValueType*)calloc(DICTIONARY_START_CAPACITY, sizeof(ValueType));
 
     dictionary->capacity = DICTIONARY_START_CAPACITY;
     dictionary->size     = 0;
@@ -81,8 +91,13 @@ void DictionaryPrint(Dictionary* dictionary, FILE* file_to_print)
                            "{\n", 
                             dictionary->size, dictionary->capacity);
 
-    for(size_t i = 0; i < dictionary->size; i ++)
-        fprintf(file_to_print, "(%zu) Key: %d -> Value: %s\n", i, dictionary->keys[i], dictionary->values[i]);
+    for(size_t i = 0; i < dictionary->size; i++)
+    {
+        fprintf(file_to_print, "(%zu) Key: %d -> Value:", i, dictionary->keys[i]);
+        for (size_t j = 0; j < dictionary->values[i].length; j++)
+            fputc(dictionary->values[i].byte_string[j], file_to_print);
+        fprintf(file_to_print, "\n");
+    }
 
     fprintf(file_to_print, "}\n\n");
 }
@@ -95,8 +110,9 @@ void DictionaryDtor(Dictionary* dictionary)
     {
         free(dictionary->keys); 
 
+        // TODO:чекнуть на утечки
         for (size_t i = 0; i < dictionary->size; i++)
-            free(dictionary->values[i]);
+            free(dictionary->values[i].byte_string);
 
         free(dictionary->values);
     }
