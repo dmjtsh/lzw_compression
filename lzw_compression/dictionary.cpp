@@ -54,7 +54,7 @@ ValueType* DictionaryAdd(Dictionary* dictionary, KeyType key, ValueType* value)
 {
     assert(dictionary != nullptr);
 
-    dictionary->keys[dictionary->size]               = key;
+    dictionary->keys[dictionary->size] = key;
     dictionary->values[dictionary->size].byte_string = (char*)calloc(value->length, sizeof(char));
     assert(dictionary->values[dictionary->size].byte_string != nullptr);
     memcpy(dictionary->values[dictionary->size].byte_string, value->byte_string, value->length);
@@ -66,7 +66,7 @@ ValueType* DictionaryAdd(Dictionary* dictionary, KeyType key, ValueType* value)
     if(dictionary->size >= dictionary->capacity)
         DictionaryReallocUp(dictionary);
 
-    return &dictionary->values[dictionary->size];
+    return &dictionary->values[dictionary->size-1];
 }
 
 void DictionaryCtor(Dictionary* dictionary)
@@ -110,7 +110,6 @@ void DictionaryDtor(Dictionary* dictionary)
     {
         free(dictionary->keys); 
 
-        // TODO:чекнуть на утечки
         for (size_t i = 0; i < dictionary->size; i++)
             free(dictionary->values[i].byte_string);
 

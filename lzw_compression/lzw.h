@@ -3,7 +3,7 @@
 #include "dictionary.h"
 
 const size_t MAX_CODE_WORD_SIZE  = 1024;
-const size_t MAX_DICTIONARY_SIZE = 65536-2; // last two nums reserved for clear and end_file_code
+const size_t MAX_DICTIONARY_SIZE = 65536-2; // Last two nums reserved for CLEAR_CODE and END_FILE_CODE
 
 const KeyType CLEAR_CODE          = 65535;
 const KeyType END_FILE_CODE       = 65534;

@@ -8,7 +8,7 @@ struct ByteStrings
     size_t length;
 };
 
-typedef short KeyType;
+typedef short       KeyType;
 typedef ByteStrings ValueType;
 
 struct Dictionary
