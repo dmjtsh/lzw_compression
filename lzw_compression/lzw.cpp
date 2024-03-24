@@ -11,27 +11,22 @@ void InitializeDictionary(Dictionary* dictionary)
 {
     assert(dictionary != nullptr);
 
+    KeyType key = 0;
+    
     ValueType buffer = {};
     buffer.length = 1;
+    buffer.byte_string = (char*)&key;
 
-    for (char i = CHAR_MIN; i < CHAR_MAX; i++) 
-    {
-         buffer.byte_string = &i;
+    for (key = CHAR_MIN; key <= CHAR_MAX; key++) 
          DictionaryAdd(dictionary, dictionary->size, &buffer);
-    }
-    // TODO сделай красивее
-    char i = CHAR_MAX;
-    buffer.byte_string = &i;
-    DictionaryAdd(dictionary, dictionary->size, &buffer);
 
+    // ADDING CLEAR AND END_FILE CODES
     buffer.length = 2;
 
-    KeyType key = CLEAR_CODE;
-    buffer.byte_string = (char*)&key;
+    key = CLEAR_CODE;
     DictionaryAdd(dictionary, key, &buffer);
 
     key = END_FILE_CODE;
-    buffer.byte_string = (char*)&key;
     DictionaryAdd(dictionary, key, &buffer);
 }
 
